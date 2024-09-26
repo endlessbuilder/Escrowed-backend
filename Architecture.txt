@@ -1,0 +1,30 @@
+
+1) Databases
+  - Users
+    :  firstName, lastName, email, password, role (ENUM: 'buyer', 'seller', 'admin')
+	
+  - Logs
+    : id (Primary key), sender_id (Users.id), recipient_id (Users.id),  message(Text), message_type,  deed_id ( Deeds.id / Null), dispute_id ( Deeds.id / Null), 
+
+  - Dispute Table
+    : id (Primary key), deed_id(Escrow.id), raised_by(Users.id), reason (Text), resolution(Text), status (ENUM: open, resolved, closed), 
+
+  - Deed
+    : title, description, payment_method(ENUM: 'Ethereum', 'Solana', 'Ton'), payment_type(ENUM: one_time, milestone), amount, timeline, status ( ENUM: pending, in_progress, completed, cancelled, disputed), buyer_id (Users.id), seller_id (Users.id), category, role(ENUM: 'Buyer', 'Seller')
+
+2) Backend APIs
+  
+   - Register
+     : POST /user/register – Register new users.
+     : POST /user/login – User login and token generation.
+     : GET /user/:id – Get user profile
+   - Deed
+     : GET /deed – Get all deeds
+     : POST /deed/create – Create a new deed
+     : GET /deed/:id – Retrieve a specific deed
+   - Dispute
+     : POST /dispute/create – Create a dispute.
+     : GET /dispute/:id – Get dispute status.
+   - Log
+     : POST /log/create – create a message for the recipient
+     : GET /log/:id – Get all messages related to user Id.
