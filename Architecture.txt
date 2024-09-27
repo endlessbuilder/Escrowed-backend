@@ -12,19 +12,33 @@
   - Deed
     : title, description, payment_method(ENUM: 'Ethereum', 'Solana', 'Ton'), payment_type(ENUM: one_time, milestone), amount, timeline, status ( ENUM: pending, in_progress, completed, cancelled, disputed), buyer_id (Users.id), seller_id (Users.id), category, role(ENUM: 'Buyer', 'Seller')
 
+  - DeedMilestone
+    : deed_id (Deeds.id), name, amount, timeline, status(ENUM: pending, in_progress, completed, cancelled)
+
+  - WorkSubmission
+    : deed_id (Deeds.id), submitted_by (Users.id), file_link, description, status(ENUM: 'pending', 'approved',  'revision_requested', 'fraud_reported'
+
 2) Backend APIs
   
    - Register
      : POST /user/register – Register new users.
      : POST /user/login – User login and token generation.
      : GET /user/:id – Get user profile
+     : PATCH /user/:id – Update user detail
    - Deed
      : GET /deed – Get all deeds
      : POST /deed/create – Create a new deed
      : GET /deed/:id – Retrieve a specific deed
+     : PATCH /deed/:id/update – Update deed details (change status).
+   - Milestone
+     : PATCH  /milestone/:id/update - Update milestone status
+   - Work Submission
+     : POST  /submit  - Seller submit a file with its link and description
+     : PATCH /review/:deed_id - Buyer can approve / revision_request / fraud_report
    - Dispute
      : POST /dispute/create – Create a dispute.
      : GET /dispute/:id – Get dispute status.
+     : PATCH /dispute/:id/update – update dispute status.
    - Log
      : POST /log/create – create a message for the recipient
      : GET /log/:id – Get all messages related to user Id.
