@@ -10,6 +10,10 @@ module.exports = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    nick_name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     email: {
       type: DataTypes.STRING,
       unique: true,
@@ -21,7 +25,7 @@ module.exports = (sequelize) => {
     },
     role: {
       type: DataTypes.ENUM('buyer', 'seller', 'admin'),
-      allowNull: false,
+      allowNull: true,
     },
   });
 };

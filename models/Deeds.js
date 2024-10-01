@@ -49,10 +49,6 @@ module.exports = (sequelize) => {
     category: {
       type: DataTypes.TEXT,
       allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM('Buyer', 'Seller'),
-      defaultValue: 'Seller',
     }
   });
 };

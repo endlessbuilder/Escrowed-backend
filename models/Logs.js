@@ -42,5 +42,9 @@ module.exports = (sequelize) => {
         key: 'id',
       },
     },
+    deepLink: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
   });
 };

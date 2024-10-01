@@ -1,5 +1,6 @@
 const { WorkSubmission } = require('../models');
 
+// [HTTP POST]
 exports.submitWork = async (req, res) => {
   try {
     const { deed_id, file_link, description, userId } = req.body;
@@ -15,6 +16,7 @@ exports.submitWork = async (req, res) => {
   }
 };
 
+// [HTTP PATCH]
 exports.reviewWork = async (req, res) => {
   try {
     const { deed_id } = req.params;

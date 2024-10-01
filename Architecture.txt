@@ -1,19 +1,18 @@
-
-1) Databases
+1) Databases     
   - Users
-    :  firstName, lastName, email, password, role (ENUM: 'buyer', 'seller', 'admin')
+    :  firstName, lastName, email, password, role (ENUM: 'buyer', 'seller', 'admin'), nickName
 	
   - Logs
-    : id (Primary key), sender_id (Users.id), recipient_id (Users.id),  message(Text), message_type,  deed_id ( Deeds.id / Null), dispute_id ( Deeds.id / Null), 
+    : id (Primary key), sender_id (Users.id), recipient_id (Users.id),  message(Text), message_type,  deed_id ( Deeds.id / Null), dispute_id ( Deeds.id / Null), deedlink
 
   - Dispute Table
     : id (Primary key), deed_id(Escrow.id), raised_by(Users.id), reason (Text), resolution(Text), status (ENUM: open, resolved, closed), 
 
   - Deed
-    : title, description, payment_method(ENUM: 'Ethereum', 'Solana', 'Ton'), payment_type(ENUM: one_time, milestone), amount, timeline, status ( ENUM: pending, in_progress, completed, cancelled, disputed), buyer_id (Users.id), seller_id (Users.id), category, role(ENUM: 'Buyer', 'Seller')
-
+    : title, description, payment_method(ENUM: 'Ethereum', 'Solana', 'Ton'), payment_type(ENUM: one_time, milestone), amount, timeline, status ( ENUM: pending, in_progress, requested, completed, cancelled, disputed), buyer_id (Users.id), seller_id (Users.id), category
+ 
   - DeedMilestone
-    : deed_id (Deeds.id), name, amount, timeline, status(ENUM: pending, in_progress, completed, cancelled)
+    : deed_id (Deeds.id), name, amount, timeline, status(ENUM: pending, in_progress, requested, completed, cancelled)
 
   - WorkSubmission
     : deed_id (Deeds.id), submitted_by (Users.id), file_link, description, status(ENUM: 'pending', 'approved',  'revision_requested', 'fraud_reported'
@@ -22,23 +21,42 @@
   
    - Register
      : POST /user/register – Register new users.
+        # Body Parameters - first_name, last_name, email, password
      : POST /user/login – User login and token generation.
+        # Body Parameters - email, password
      : GET /user/:id – Get user profile
+        :: Based on id, you can get the profile of the user.
      : PATCH /user/:id – Update user detail
+        # Body Parameters - first_name, last_name, password
+
    - Deed
      : GET /deed – Get all deeds
      : POST /deed/create – Create a new deed
+        # Body Parameters - userId, title, description, payment_method, payment_type, amount, timeline, 		milestones - [{deed_id, name, amount, timeline}, {deed_id, name, amount, timeline}, ...]
      : GET /deed/:id – Retrieve a specific deed
      : PATCH /deed/:id/update – Update deed details (change status).
+     : [** I should insert APIs (for complete project / milestone) for release funds**]
+     : [** I should insert APIs (for complete project / milestone) for request funds** -- fileUri, or file]
+
    - Milestone
+     : GET /milestone/:id - Get milestones based on deed id
      : PATCH  /milestone/:id/update - Update milestone status
+        # Body Parameters -  status ('pending', 'in_progress', 'completed', 'cancelled')
+
    - Work Submission
      : POST  /submit  - Seller submit a file with its link and description
+        # Body Parameters - deed_id, file_link, description, userId
      : PATCH /review/:deed_id - Buyer can approve / revision_request / fraud_report
+        # Body Parameters - status ('pending', 'approved', 'revision_requested', 'fraud_reported')
+
    - Dispute
      : POST /dispute/create – Create a dispute.
+         # Body Parameters - deed_id, user_id, reason
      : GET /dispute/:id – Get dispute status.
      : PATCH /dispute/:id/update – update dispute status.
+         # Body Parameters - status ('open', 'resolved', 'closed')
+
    - Log
      : POST /log/create – create a message for the recipient
+         # Body Parameters - sender_id, recipient_id, message, message_type, deed_id, dispute_id
      : GET /log/:id – Get all messages related to user Id.

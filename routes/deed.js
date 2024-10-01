@@ -6,6 +6,6 @@ const { authenticate } = require('../middlewares/auth');
 router.get('/', getAllDeeds);
 router.post('/create', createDeed);
 router.get('/:id', getDeedById);
-router.get('/:id/update', updateDeed);
+router.patch('/:id/update', updateDeed);
 
 module.exports = router;

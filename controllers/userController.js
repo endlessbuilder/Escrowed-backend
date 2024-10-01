@@ -2,19 +2,25 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('../models');
 
-// [Post]
+// [HTTP POST]
 exports.register = async (req, res) => {
   try {
-    const { first_name, last_name, email, password, role } = req.body;
+    const { first_name, last_name, email, password } = req.body;
+     // Check if the email already exists
+     const existingUser = await User.findOne({ where: { email } });
+     if (existingUser) {
+       return res.status(400).json({ error: 'Email already exists.' });
+     }
+     
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ first_name, last_name, email, password: hashedPassword, role });
-    res.status(201).json({ id: user.id, email: user.email, role: user.role });
+    const user = await User.create({ first_name, last_name, email, password: hashedPassword });
+    res.status(201).json({ id: user.id, email: user.email});
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// [Post]
+// [HTTP POST]
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -29,14 +35,14 @@ exports.login = async (req, res) => {
   }
 };
 
-// [Get]
+// [HTTP GET]
 exports.getUserProfile = async (req, res) => {
   try {
     const userId = req.params.id;
 
     const user = await User.findOne({
       where: { id: userId },
-      attributes: ['id', 'first_name', 'last_name', 'email', 'role'], 
+      attributes: ['id', 'first_name', 'last_name', 'email'], 
     });
 
     if (!user) {
@@ -50,11 +56,11 @@ exports.getUserProfile = async (req, res) => {
   }
 };
 
-// [Patch]
+// [HTTP PATCH]
 exports.updateUserDetail = async (req, res) => {
   try {
     const userId = req.params.id;
-    const { first_name, last_name, email, password, role } = req.body;
+    const { first_name, last_name, password } = req.body;
 
     const user = await User.findOne({ where: { id: userId } });
     if (!user) {
@@ -66,7 +72,6 @@ exports.updateUserDetail = async (req, res) => {
       last_name,
       email,
       password,
-      role,
     });
 
     return res.status(200).json({ message: 'User details updated successfully', user });

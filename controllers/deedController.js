@@ -1,5 +1,7 @@
 const { Deed, DeedMilestone } = require('../models');
 
+// Create a deed
+// [HTTP POST]
 exports.createDeed = async (req, res) => {
   try {
     const { userId, title, description, payment_method, payment_type, amount, timeline, milestones } = req.body;
@@ -26,6 +28,7 @@ exports.createDeed = async (req, res) => {
 };
 
 // Get all deeds
+// [HTTP GET]
 exports.getAllDeeds = async (req, res) => {
   try {
     const deeds = await Deed.findAll();
@@ -37,6 +40,7 @@ exports.getAllDeeds = async (req, res) => {
 };
 
 // Get a deed by ID
+// [HTTP GET]
 exports.getDeedById = async (req, res) => {
   try {
     const deedId = req.params.id;
@@ -52,6 +56,7 @@ exports.getDeedById = async (req, res) => {
 };
 
 // Update a deed
+// [HTTP PATCH]
 exports.updateDeed = async (req, res) => {
   try {
     const deedId = req.params.id;

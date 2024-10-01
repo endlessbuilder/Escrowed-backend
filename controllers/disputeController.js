@@ -1,5 +1,6 @@
 const { Dispute } = require('../models');
 
+// [HTTP POST]
 exports.createDispute = async (req, res) => {
   try {
     const { deed_id, user_id, reason } = req.body;
@@ -14,6 +15,7 @@ exports.createDispute = async (req, res) => {
   }
 };
 
+// [HTTP PATCH]
 exports.updateDispute = async (req, res) => {
   try {
     const { id } = req.params;
@@ -30,6 +32,7 @@ exports.updateDispute = async (req, res) => {
   }
 };
 
+// [HTTP GET]
 exports.getDisputeById = async (req, res) => {
   try {
     const disputeId = req.params.id;

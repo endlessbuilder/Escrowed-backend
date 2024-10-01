@@ -1,6 +1,7 @@
 const { Log } = require('../models');
 
 // create a new log
+// [HTTP POST]
 exports.createLog = async (req, res) => {
   try {
     const { sender_id, recipient_id, message, message_type, deed_id, dispute_id } = req.body;
@@ -20,6 +21,7 @@ exports.createLog = async (req, res) => {
 };
 
 // Get all logs for a specific user
+// [HTTP GET]
 exports.getLogsByUserId = async (req, res) => {
   try {
     const userId = req.params.id;
