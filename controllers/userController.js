@@ -28,6 +28,9 @@ exports.login = async (req, res) => {
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+    if (user.isActive == false) {
+      return res.status(401).json({ error: 'User is deactivated' });
+    }
     // const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ user });
   } catch (error) {

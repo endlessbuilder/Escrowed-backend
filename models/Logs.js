@@ -41,10 +41,6 @@ module.exports = (sequelize) => {
         model: 'Disputes',
         key: 'id',
       },
-    },
-    deepLink: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-    },
+    }
   });
 };

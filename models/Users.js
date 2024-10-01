@@ -27,5 +27,9 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM('buyer', 'seller', 'admin'),
       allowNull: true,
     },
+    isActive: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
   });
 };

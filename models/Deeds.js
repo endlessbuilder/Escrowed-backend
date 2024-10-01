@@ -27,7 +27,7 @@ module.exports = (sequelize) => {
       allowNull: true, // Nullable for milestones
     },
     status: {
-      type: DataTypes.ENUM('pending', 'in_progress', 'completed', 'cancelled', 'disputed'),
+      type: DataTypes.ENUM('pending', 'in_progress', 'requested', 'completed', 'cancelled', 'disputed'),
       defaultValue: 'pending',
     },
     buyer_id: {

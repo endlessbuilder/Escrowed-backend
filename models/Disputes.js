@@ -30,5 +30,13 @@ module.exports = (sequelize) => {
       type: DataTypes.ENUM('open', 'resolved', 'closed'),
       defaultValue: 'open',
     },
+    resolved_at: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    },
+    closed_at: {
+      type: DataTypes.TIME,
+      allowNull: true,
+    }
   });
 };
