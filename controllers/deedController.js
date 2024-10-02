@@ -44,7 +44,17 @@ exports.getAllDeeds = async (req, res) => {
 exports.getDeedById = async (req, res) => {
   try {
     const deedId = req.params.id;
-    const deed = await Deed.findOne({ where: { id: deedId } });
+    const deed = await Deed.findOne({
+      where: { id: deedId },
+      include: [
+        {
+          model: DeedMilestone,
+          as: 'deedMilestones', // Use the alias if defined in associations
+          required: false, // This allows the deed to be returned even if it has no milestones
+        },
+      ],
+    });
+
     if (!deed) {
       return res.status(404).json({ message: 'Deed not found' });
     }
@@ -198,7 +208,7 @@ exports.updateMilestoneByMilestoneId = async (req, res) => {
     }
 
     // Update milestone details
-    if (milestone_name) milestone.milestone_name = milestone_name;
+    if (milestone_name) milestone.name = milestone_name;
     if (amount) milestone.amount = amount;
     if (timeline) milestone.timeline = timeline;
     if (status) milestone.status = status; 

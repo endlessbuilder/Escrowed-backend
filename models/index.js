@@ -33,7 +33,7 @@ Deed.belongsTo(User, { foreignKey: 'buyer_id', as: 'Buyer' });
 Deed.belongsTo(User, { foreignKey: 'seller_id', as: 'Seller' }); 
 
 Deed.hasMany(DeedMilestone, { foreignKey: 'deed_id' }); 
-DeedMilestone.belongsTo(Deed, { foreignKey: 'deed_id' }); 
+DeedMilestone.belongsTo(Deed, { foreignKey: 'deed_id', as: 'deedMilestones' }); 
 
 Dispute.belongsTo(Deed, { foreignKey: 'deed_id' }); 
 Dispute.belongsTo(User, { foreignKey: 'raised_by', as: 'Raiser' }); 

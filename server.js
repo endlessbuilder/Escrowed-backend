@@ -14,6 +14,10 @@ app.use('/dispute', disputeRoutes);
 app.use('/log', logRoutes);
 app.use('/work', workRoutes);
 
+app.get('/', (req, res) => {
+  res.send('Escrow Backend Server');
+});
+
 const PORT = process.env.PORT || 5000;
 
 sequelize.sync().then(() => {
