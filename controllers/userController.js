@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, Deed } = require('../models');
 
 // [HTTP POST]
 exports.register = async (req, res) => {
@@ -25,7 +25,8 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    if (!user || !(await bcrypt.compare(hashedPassword, user.password))) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
     if (user.isActive == false) {
@@ -73,7 +74,6 @@ exports.updateUserDetail = async (req, res) => {
     await user.update({
       first_name,
       last_name,
-      email,
       password,
     });
 
@@ -81,5 +81,34 @@ exports.updateUserDetail = async (req, res) => {
   } catch (error) {
     console.error('Error updating user details:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// [HTTP GET]
+exports.getUserActivity = async (req, res) => {
+  try {
+    const userId = req.params.userId; 
+
+    const activity = await Deed.findAll({
+      where: { seller_id: userId }, 
+      attributes: [
+        [sequelize.fn('COUNT', sequelize.col('id')), 'totalDeeds'], // Total deeds
+        [sequelize.fn('SUM', sequelize.col('amount')), 'totalMoney'], // Total money
+        [sequelize.fn('SUM', sequelize.literal("CASE WHEN status = 'pending' OR status = 'in_progress' THEN 1 ELSE 0 END")), 'activeDeeds'], // Active deeds
+        [sequelize.fn('SUM', sequelize.literal("CASE WHEN status = 'completed' THEN 1 ELSE 0 END")), 'completedDeeds'], // Completed deeds
+      ],
+    });
+
+    // Extract the activity data
+    const activityData = activity[0] || {
+      totalDeeds: 0,
+      totalMoney: 0,
+      activeDeeds: 0,
+      completedDeeds: 0,
+    };
+
+    res.json(activityData);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
   }
 };

@@ -4,7 +4,7 @@ const { Deed, DeedMilestone } = require('../models');
 // [HTTP POST]
 exports.createDeed = async (req, res) => {
   try {
-    const { userId, title, description, payment_method, payment_type, amount, timeline, milestones } = req.body;
+    const { userId, title, description, payment_method, payment_type, amount, timeline, milestones, buySellType } = req.body;
     const deed = await Deed.create({
       title,
       description,
@@ -12,7 +12,8 @@ exports.createDeed = async (req, res) => {
       payment_type,
       amount: amount,
       timeline: timeline,
-      seller_id: userId,
+      seller_id: buySellType == "SELL" ? userId : 0,
+      buyer_id: buySellType == "BUY" ? userId : 0,
     });
 
     if (payment_type === 'milestone') {
@@ -70,7 +71,8 @@ exports.getDeedById = async (req, res) => {
 exports.updateDeed = async (req, res) => {
   try {
     const deedId = req.params.id;
-    const deed = await Deed.findOne({ where: { id: deedId } });
+    // const deed = await Deed.findOne({ where: { id: deedId } });
+    const deed = await Deed.findByPk(deedId);
     if (!deed) {
       return res.status(404).json({ message: 'Deed not found' });
     }
