@@ -4,10 +4,11 @@ const { WorkSubmission } = require('../models');
 exports.submitWork = async (req, res) => {
   try {
     const { deed_id, file_link, description, userId } = req.body;
+    const uploaded_link = req.file ? path.join('uploads', req.file.filename) : null; 
     const submission = await WorkSubmission.create({
       deed_id,
       submitted_by: userId,
-      file_link,
+      file_link: file_link ? file_link : uploaded_link,
       description,
     });
     res.status(201).json(submission);

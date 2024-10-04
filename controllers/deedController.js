@@ -84,9 +84,45 @@ exports.updateDeed = async (req, res) => {
   }
 };
 
-// In case of buyer
+// In case of buyer, to check its state
 // [HTTP POST]
-exports.requestFunds = async (req, res) => {
+exports.requestFundsBefore = async (req, res) => {
+  try {
+    const { user_id, deed_id, milestone_id } = req.body;
+    const deed = await Deed.findByPk(deed_id);
+
+    if (!deed) {
+      return res.status(404).json({ error: 'Deed not found' });
+    }
+
+    // Check if the caller is the buyer
+    if (user_id !== deed.buyer_id) {
+      return res.status(403).json({ error: 'Only the buyer can request funds.' });
+    }
+
+    if (milestone_id) {
+      // Check if the milestone exists
+      const milestone = await DeedMilestone.findByPk(milestone_id);
+      if (!milestone || milestone.deed_id !== deed_id) {
+        return res.status(404).json({ error: 'Milestone not found for this deed.' });
+      }
+
+      // Check if the milestone status allows requesting funds
+      if (milestone.status !== 'pending') {
+        return res.status(400).json({ error: 'Funds have already been requested or released for this milestone.' });
+      }
+      res.json({ message: 'Funds requested successfully for the milestone.', milestone });
+    } else {
+      res.json({ message: 'Complete payment requested successfully.', deed });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// In case of buyer, to save its updated state
+// [HTTP POST]
+exports.requestFundsAfter = async (req, res) => {
   try {
     const { user_id, deed_id, milestone_id } = req.body;
     const deed = await Deed.findByPk(deed_id);
@@ -127,9 +163,45 @@ exports.requestFunds = async (req, res) => {
   }
 };
 
-// In case of Seller
+// In case of Seller, to check its state
 // [HTTP POST]
-exports.releaseFunds = async (req, res) => {
+exports.releaseFundsBefore = async (req, res) => {
+  try {
+    const { user_id, deed_id, milestone_id } = req.body;
+    const deed = await Deed.findByPk(deed_id);
+
+    if (!deed) {
+      return res.status(404).json({ error: 'Deed not found' });
+    }
+
+    // Check if the caller is the seller
+    if (user_id !== deed.seller_id) {
+      return res.status(403).json({ error: 'Only the seller can release funds.' });
+    }
+
+    if (milestone_id) {
+      // Release funds for a specific milestone
+      const milestone = await DeedMilestone.findByPk(milestone_id);
+      if (!milestone || milestone.deed_id !== deed_id) {
+        return res.status(404).json({ error: 'Milestone not found for this deed.' });
+      }
+
+      // Check if the funds have been requested for this milestone
+      if (milestone.status !== 'requested') {
+        return res.status(400).json({ error: 'Funds have not been requested for this milestone.' });
+      }
+      res.json({ message: 'Milestone funds released successfully.', milestone });
+    } else {
+      res.json({ message: 'Complete payment released successfully.', deed });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
+// In case of Seller, to save updated the state
+// [HTTP POST]
+exports.releaseFundsAfter = async (req, res) => {
   try {
     const { user_id, deed_id, milestone_id } = req.body;
     const deed = await Deed.findByPk(deed_id);
