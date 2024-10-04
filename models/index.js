@@ -25,6 +25,7 @@ const Dispute = require('./Disputes')(sequelize);
 const DeedMilestone = require('./DeedMilestones')(sequelize);
 const Log = require('./Logs')(sequelize);
 const WorkSubmission = require('./WorkSubmission')(sequelize);
+const Faq = require("./Faq")(sequelize);
 
 // Define relationships
 User.hasMany(Deed, { foreignKey: 'buyer_id' }); 
@@ -44,4 +45,4 @@ Log.belongsTo(Deed, { foreignKey: 'deed_id' });
 Log.belongsTo(Dispute, { foreignKey: 'dispute_id' }); 
 
 
-module.exports = { sequelize, User, Deed, DeedMilestone, Dispute, WorkSubmission, Log };
+module.exports = { sequelize, User, Deed, DeedMilestone, Dispute, WorkSubmission, Log, Faq };

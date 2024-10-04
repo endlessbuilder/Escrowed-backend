@@ -10,6 +10,10 @@ module.exports = (sequelize) => {
         key: 'id',
       },
     },
+    sender_name: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     recipient_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -41,6 +45,10 @@ module.exports = (sequelize) => {
         model: 'Disputes',
         key: 'id',
       },
+    },
+    isRead: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
     }
   });
 };
