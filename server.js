@@ -6,6 +6,7 @@ const disputeRoutes = require("./routes/dispute");
 const logRoutes = require("./routes/log");
 const workRoutes = require("./routes/work");
 const faqRoutes = require('./routes/faq');
+const suggestionRoutes = require('./routes/suggestion'); 
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use('/dispute', disputeRoutes);
 app.use('/log', logRoutes);
 app.use('/work', workRoutes);
 app.use('/faq', faqRoutes); 
+app.use('/suggestion', suggestionRoutes);
+
 
 app.get('/', (req, res) => {
   res.send('Escrow Backend Server');

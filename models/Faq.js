@@ -12,7 +12,7 @@ module.exports = (sequelize) => {
     },
     status: {
       type: DataTypes.ENUM('active', 'inactive'),
-      defaultValue: 'active', // Default status is active
+      defaultValue: 'active',
     },
   });
 };

@@ -26,23 +26,24 @@ const DeedMilestone = require('./DeedMilestones')(sequelize);
 const Log = require('./Logs')(sequelize);
 const WorkSubmission = require('./WorkSubmission')(sequelize);
 const Faq = require("./Faq")(sequelize);
+const Suggestion = require("./Faq")(sequelize);
 
-// Define relationships
+// Define relationships between User and Deed
 User.hasMany(Deed, { foreignKey: 'buyer_id' }); 
 User.hasMany(Deed, { foreignKey: 'seller_id' }); 
 Deed.belongsTo(User, { foreignKey: 'buyer_id', as: 'Buyer' }); 
 Deed.belongsTo(User, { foreignKey: 'seller_id', as: 'Seller' }); 
-
+// Deed associations
 Deed.hasMany(DeedMilestone, { foreignKey: 'deed_id' }); 
 DeedMilestone.belongsTo(Deed, { foreignKey: 'deed_id', as: 'deedMilestones' }); 
-
+// Dispute associations
 Dispute.belongsTo(Deed, { foreignKey: 'deed_id' }); 
 Dispute.belongsTo(User, { foreignKey: 'raised_by', as: 'Raiser' }); 
-
+// Log associations
 Log.belongsTo(User, { foreignKey: 'sender_id', as: 'Sender' }); 
 Log.belongsTo(User, { foreignKey: 'recipient_id', as: 'Recipient' }); 
 Log.belongsTo(Deed, { foreignKey: 'deed_id' }); 
 Log.belongsTo(Dispute, { foreignKey: 'dispute_id' }); 
 
 
-module.exports = { sequelize, User, Deed, DeedMilestone, Dispute, WorkSubmission, Log, Faq };
+module.exports = { sequelize, User, Deed, DeedMilestone, Dispute, WorkSubmission, Log, Faq, Suggestion };
