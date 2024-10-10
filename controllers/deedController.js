@@ -1,4 +1,5 @@
-const { Deed, DeedMilestone } = require("../models");
+const { Deed, DeedMilestones } = require("../models");
+const { Op } = require("sequelize"); // Import Sequelize operators
 
 // Create a deed
 // [HTTP POST]
@@ -28,7 +29,7 @@ exports.createDeed = async (req, res) => {
 
     if (payment_type === "milestone") {
       for (const milestone of milestones) {
-        await DeedMilestone.create({ ...milestone, deed_id: deed.id });
+        await DeedMilestones.create({ ...milestone, deed_id: deed.id });
       }
     }
 
@@ -59,8 +60,40 @@ exports.getDeedById = async (req, res) => {
       where: { id: deedId },
       include: [
         {
-          model: DeedMilestone,
+          model: DeedMilestones,
           as: "deedMilestones", // Use the alias if defined in associations
+          required: false, // This allows the deed to be returned even if it has no milestones
+        },
+      ],
+    });
+
+    if (!deed) {
+      return res.status(404).json({ message: "Deed not found" });
+    }
+    return res.status(200).json(deed);
+  } catch (error) {
+    console.error("Error fetching deed:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// Get a deed by userId
+// [HTTP GET]
+exports.getDeedByUserId = async (req, res) => {
+  console.log(">>> Get Deed by userId API");
+  try {
+    const userId = req.params.id;
+    const deed = await Deed.findAll({
+      where: {
+        [Op.or]: [
+          { buyer_id: userId }, // First condition
+          { seller_id: userId }, // Second condition
+        ],
+      },
+      include: [
+        {
+          model: DeedMilestones,
+          as: "milestones", // Use the alias if defined in associations
           required: false, // This allows the deed to be returned even if it has no milestones
         },
       ],
@@ -114,7 +147,7 @@ exports.requestFundsBefore = async (req, res) => {
 
     if (milestone_id) {
       // Check if the milestone exists
-      const milestone = await DeedMilestone.findByPk(milestone_id);
+      const milestone = await DeedMilestones.findByPk(milestone_id);
       if (!milestone || milestone.deed_id !== deed_id) {
         return res
           .status(404)
@@ -123,12 +156,10 @@ exports.requestFundsBefore = async (req, res) => {
 
       // Check if the milestone status allows requesting funds
       if (milestone.status !== "pending") {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Funds have already been requested or released for this milestone.",
-          });
+        return res.status(400).json({
+          error:
+            "Funds have already been requested or released for this milestone.",
+        });
       }
       res.json({
         message: "Funds requested successfully for the milestone.",
@@ -162,7 +193,7 @@ exports.requestFundsAfter = async (req, res) => {
 
     if (milestone_id) {
       // Check if the milestone exists
-      const milestone = await DeedMilestone.findByPk(milestone_id);
+      const milestone = await DeedMilestones.findByPk(milestone_id);
       if (!milestone || milestone.deed_id !== deed_id) {
         return res
           .status(404)
@@ -171,12 +202,10 @@ exports.requestFundsAfter = async (req, res) => {
 
       // Check if the milestone status allows requesting funds
       if (milestone.status !== "pending") {
-        return res
-          .status(400)
-          .json({
-            error:
-              "Funds have already been requested or released for this milestone.",
-          });
+        return res.status(400).json({
+          error:
+            "Funds have already been requested or released for this milestone.",
+        });
       }
 
       // Change milestone status to "requested"
@@ -217,7 +246,7 @@ exports.releaseFundsBefore = async (req, res) => {
 
     if (milestone_id) {
       // Release funds for a specific milestone
-      const milestone = await DeedMilestone.findByPk(milestone_id);
+      const milestone = await DeedMilestones.findByPk(milestone_id);
       if (!milestone || milestone.deed_id !== deed_id) {
         return res
           .status(404)
@@ -262,7 +291,7 @@ exports.releaseFundsAfter = async (req, res) => {
 
     if (milestone_id) {
       // Release funds for a specific milestone
-      const milestone = await DeedMilestone.findByPk(milestone_id);
+      const milestone = await DeedMilestones.findByPk(milestone_id);
       if (!milestone || milestone.deed_id !== deed_id) {
         return res
           .status(404)
@@ -306,7 +335,7 @@ exports.getMilestonesByDeedId = async (req, res) => {
     }
 
     // Retrieve milestones associated with the deed
-    const milestones = await DeedMilestone.findAll({
+    const milestones = await DeedMilestones.findAll({
       where: { deed_id },
     });
 
@@ -330,7 +359,7 @@ exports.updateMilestoneByMilestoneId = async (req, res) => {
     const { milestone_name, amount, timeline, status } = req.body;
 
     // Find the milestone to ensure it exists
-    const milestone = await DeedMilestone.findByPk(milestone_id);
+    const milestone = await DeedMilestones.findByPk(milestone_id);
     if (!milestone) {
       return res.status(404).json({ error: "Milestone not found" });
     }

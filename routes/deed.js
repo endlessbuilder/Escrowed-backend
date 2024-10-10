@@ -3,6 +3,7 @@ const {
   createDeed,
   getAllDeeds,
   getDeedById,
+  getDeedByUserId,
   updateDeed,
   requestFundsAfter,
   requestFundsBefore,
@@ -17,6 +18,7 @@ const { authenticate } = require("../middlewares/auth");
 router.get("/", getAllDeeds);
 router.post("/create", createDeed);
 router.get("/:id", getDeedById);
+router.get("/byuser/:id", getDeedByUserId);
 router.patch("/:id/update", updateDeed);
 router.post("/requestFundsBefore", requestFundsBefore);
 router.post("/requestFundsAfter", requestFundsAfter);
