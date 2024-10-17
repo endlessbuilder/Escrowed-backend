@@ -19,7 +19,7 @@ module.exports = (sequelize) => {
       allowNull: false,
     },
     timeline: {
-      type: DataTypes.DATE,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     status: {

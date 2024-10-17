@@ -4,37 +4,56 @@ const { Op } = require("sequelize"); // Import Sequelize operators
 // Create a deed
 // [HTTP POST]
 exports.createDeed = async (req, res) => {
+  console.log(">>> create deed API");
   try {
     const {
-      userId,
+      user_id,
       title,
       description,
       payment_method,
       payment_type,
-      amount,
-      timeline,
       milestones,
-      buySellType,
+      buy_sell_type,
     } = req.body;
+
+    console.log(
+      `>>> title: ${title} description: ${description} payment_method: ${payment_method} payment_type: ${payment_type} milestones: ${milestones} paySellType: ${buy_sell_type}`
+    );
+
     const deed = await Deed.create({
       title,
       description,
       payment_method,
       payment_type,
-      amount: amount,
-      timeline: timeline,
-      seller_id: buySellType == "SELL" ? userId : 0,
-      buyer_id: buySellType == "BUY" ? userId : 0,
+      amount: milestones[0].amount,
+      timeline: parseInt(milestones[0].expectedTime),
+      seller_id: buy_sell_type == "SELL" ? user_id : null,
+      buyer_id: buy_sell_type == "BUY" ? user_id : null,
+      status: "pending", // Default status for new deeds
+      category: "Billing",
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
+
+    console.log(`>>> deed: ${deed}`);
 
     if (payment_type === "milestone") {
       for (const milestone of milestones) {
-        await DeedMilestones.create({ ...milestone, deed_id: deed.id });
+        await DeedMilestones.create({
+          name: milestone.milestone,
+          amount: parseFloat(milestone.amount),
+          timeline: parseInt(milestone.timeline),
+          status: "pending",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deed_id: deed.id,
+        });
       }
     }
 
     res.status(201).json(deed);
   } catch (error) {
+    console.log(">>> error : ", error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -61,7 +80,7 @@ exports.getDeedById = async (req, res) => {
       include: [
         {
           model: DeedMilestones,
-          as: "deedMilestones", // Use the alias if defined in associations
+          as: "milestones", // Use the alias if defined in associations
           required: false, // This allows the deed to be returned even if it has no milestones
         },
       ],
